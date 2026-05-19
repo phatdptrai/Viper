@@ -6,155 +6,339 @@
     <title>Tool Treo Voice - VIPER COMMUNITY</title>
     <style>
         :root {
-            --glow-color: #00ffff;
-            --purple-glow: #bd00ff;
+            --neon-cyan: #00ffff;
+            --neon-purple: #bd00ff;
+            --neon-green: #00ff66;
+            --bg-dark: #0a0a0f;
         }
+
         body { 
-            background: radial-gradient(circle, #111116 0%, #050508 100%);
-            color: #00ff66; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: radial-gradient(circle at center, #14141f 0%, var(--bg-dark) 100%);
+            color: #fff; 
+            font-family: 'Segoe UI', Arial, sans-serif; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
             min-height: 100vh; 
             margin: 0; 
-            padding: 20px 0;
+            padding: 20px;
             box-sizing: border-box;
+            overflow-x: hidden;
         }
-        .container { 
-            border: 2px solid var(--glow-color); 
-            padding: 35px; 
-            border-radius: 16px; 
-            width: 420px; 
-            background-color: rgba(20, 20, 27, 0.95); 
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2), inset 0 0 15px rgba(0, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            transition: 0.4s;
+
+        /* Hộp giao diện nằm ngang siêu rộng */
+        .main-wrapper {
+            position: relative;
+            background: rgba(15, 15, 25, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            width: 900px;
+            max-width: 100%;
+            border: 2px solid var(--neon-purple);
+            box-shadow: 0 0 30px rgba(189, 0, 255, 0.25), inset 0 0 20px rgba(189, 0, 255, 0.15);
+            backdrop-filter: blur(12px);
+            transition: all 0.5s ease;
         }
-        .container:hover {
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.4), inset 0 0 20px rgba(0, 255, 255, 0.2);
+
+        .main-wrapper::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-purple), var(--neon-green));
+            border-radius: 20px;
+            z-index: -1;
+            opacity: 0.3;
+            filter: blur(8px);
         }
+
+        .main-wrapper:hover {
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.4), inset 0 0 25px rgba(0, 255, 255, 0.2);
+            border-color: var(--neon-cyan);
+        }
+
+        /* Tiêu đề hiệu ứng Neon Pulse nhấp nháy */
         h2 { 
             text-align: center; 
-            color: #fff; 
-            margin-top: 0; 
-            font-size: 22px;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px var(--glow-color);
-            animation: pulse 2s infinite alternate;
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #fff;
+            animation: neonGlow 2.5s infinite alternate ease-in-out;
         }
-        @keyframes pulse {
-            0% { text-shadow: 0 0 8px var(--glow-color); }
-            100% { text-shadow: 0 0 20px var(--glow-color), 0 0 30px var(--purple-glow); }
+
+        @keyframes neonGlow {
+            0% { text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px rgba(0, 255, 255, 0.5); }
+            100% { text-shadow: 0 0 25px var(--neon-purple), 0 0 40px var(--neon-cyan), 0 0 50px rgba(189, 0, 255, 0.8); }
         }
-        label { display: block; margin-top: 18px; font-weight: 600; color: #00ffff; font-size: 14px; letter-spacing: 0.5px; }
+
+        /* Bố cục 3 cột nằm ngang xếp hàng đều tăm tắp */
+        .inputs-row {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+            margin-bottom: 25px;
+        }
+
+        .input-field {
+            display: table-cell;
+            padding: 0 12px;
+        }
+
+        .input-field:first-child { padding-left: 0; }
+        .input-field:last-child { padding-right: 0; }
+
+        label { 
+            display: block; 
+            font-weight: 700; 
+            color: var(--neon-cyan); 
+            font-size: 13px; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
         input[type="text"], input[type="password"] { 
             width: 100%; 
-            padding: 12px; 
-            margin-top: 6px; 
-            background-color: #0d0d13; 
+            padding: 14px; 
+            background-color: #07070b; 
             color: #fff; 
-            border: 1px solid #333; 
+            border: 1px solid #252535; 
             box-sizing: border-box; 
             border-radius: 8px; 
-            font-family: monospace;
-            transition: 0.3s;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            transition: all 0.3s ease;
         }
+
         input[type="text"]:focus, input[type="password"]:focus {
-            border-color: var(--glow-color);
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+            background-color: #0c0c14;
             outline: none;
         }
-        .checkbox-group { 
-            margin-top: 22px; 
-            display: flex; 
-            justify-content: space-between; 
-            background: #0d0d13;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #222;
+
+        /* Hàng chứa các nút cài đặt trạng thái và Nút kích hoạt */
+        .controls-row {
+            display: table;
+            width: 100%;
+            margin-top: 10px;
         }
-        .checkbox-item { display: flex; align-items: center; gap: 5px; }
-        .checkbox-item input { cursor: pointer; }
-        .checkbox-item label { margin-top: 0; cursor: pointer; color: #aaa; font-size: 13px; }
-        .checkbox-item input:checked + label { color: #00ff66; }
+
+        .checkbox-container {
+            display: table-cell;
+            vertical-align: middle;
+            width: 60%;
+        }
+
+        .checkbox-item { 
+            display: inline-block; 
+            margin-right: 25px;
+            cursor: pointer;
+        }
         
-        button { 
-            width: 100%; 
-            padding: 14px; 
-            margin-top: 25px; 
-            background: linear-gradient(45deg, #00ffff, #bd00ff);
+        .checkbox-item input[type="checkbox"] {
+            display: none;
+        }
+
+        /* Thiết kế custom ô checkbox kiểu Cyber */
+        .checkbox-item span {
+            position: relative;
+            padding-left: 28px;
+            color: #888;
+            font-size: 14px;
+            font-weight: 600;
+            user-select: none;
+            transition: color 0.3s ease;
+        }
+
+        .checkbox-item span::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0;
+            width: 16px; height: 16px;
+            border: 2px solid #444;
+            border-radius: 4px;
+            background: #07070b;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-item input[type="checkbox"]:checked + span {
+            color: var(--neon-green);
+            text-shadow: 0 0 5px rgba(0, 255, 102, 0.3);
+        }
+
+        .checkbox-item input[type="checkbox"]:checked + span::before {
+            border-color: var(--neon-green);
+            background: var(--neon-green);
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .button-container {
+            display: table-cell;
+            vertical-align: middle;
+            width: 40%;
+            text-align: right;
+        }
+        
+        .start-btn { 
+            width: 100%;
+            max-width: 280px;
+            padding: 15px; 
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
             color: #fff; 
-            font-weight: bold; 
+            font-weight: 800; 
             font-size: 15px; 
             border: none; 
             border-radius: 8px; 
             cursor: pointer; 
-            transition: 0.4s; 
-            letter-spacing: 1px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-        }
-        button:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(189, 0, 255, 0.5); 
-        }
-        button:active { transform: translateY(0); }
-        #status { margin-top: 15px; text-align: center; font-weight: bold; font-size: 14px;}
-        
-        /* CSS CHO KHUNG DISCORD XỊN */
-        .discord-widget-container {
-            margin-top: 30px;
-            border-top: 1px dashed #333;
-            padding-top: 20px;
-            text-align: center;
-        }
-        .discord-title {
-            font-size: 12px;
-            color: #888;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 12px;
-            font-weight: bold;
+            letter-spacing: 1.5px;
+            transition: all 0.4s ease; 
+            box-shadow: 0 0 15px rgba(189, 0, 255, 0.4);
         }
-        .discord-iframe {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            background-color: #23272a;
+
+        .start-btn:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px var(--neon-cyan);
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+        }
+
+        #status { 
+            margin-top: 20px; 
+            text-align: center; 
+            font-weight: bold; 
+            font-size: 14px;
+            min-height: 20px;
+        }
+        
+        /* KHUNG DISCORD BANNER SIÊU TO KHỔNG LỒ NẰM DƯỚI */
+        .discord-big-banner {
+            margin-top: 35px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 30px;
+        }
+
+        .discord-btn-card {
+            display: block;
+            text-decoration: none;
+            background: linear-gradient(135deg, #1c1e2d 0%, #11121a 100%);
+            border: 2px solid #5865F2;
+            border-radius: 14px;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .discord-btn-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: 0.5s;
+        }
+
+        .discord-btn-card:hover::before {
+            left: 100%;
+        }
+
+        .discord-btn-card:hover {
+            transform: translateY(-4px);
+            border-color: #7289da;
+            box-shadow: 0 12px 30px rgba(88, 101, 242, 0.4);
+        }
+
+        /* Icon Discord SVG vẽ trực tiếp siêu sắc nét */
+        .discord-icon {
+            width: 55px;
+            height: 55px;
+            fill: #5865F2;
+            margin-bottom: 12px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .discord-btn-card:hover .discord-icon {
+            fill: #fff;
+            transform: scale(1.1) rotate(-5deg);
+            filter: drop-shadow(0 0 10px #5865F2);
+        }
+
+        .discord-text-main {
+            font-size: 24px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 1px;
+            margin: 0 0 6px 0;
+            text-transform: uppercase;
+        }
+
+        .discord-text-sub {
+            font-size: 14px;
+            color: #7289da;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>⚡ VIPER COMMUNITY ⚡<br>Discord Voice Web</h2>
-    <label>Discord Token:</label>
-    <input type="password" id="token" placeholder="Nhập Token tài khoản...">
-    <label>Guild ID (ID Server):</label>
-    <input type="text" id="guild_id" placeholder="Nhập ID Server Discord...">
-    <label>Channel ID (ID Phòng Voice):</label>
-    <input type="text" id="channel_id" placeholder="Nhập ID Kênh Voice...">
+
+<div class="main-wrapper">
+    <h2>⚡ VIPER COMMUNITY ⚡ DISCORD VOICE TOOL</h2>
     
-    <div class="checkbox-group">
-        <div class="checkbox-item">
-            <input type="checkbox" id="mute" checked> 
-            <label for="mute">Tắt Mic</label>
+    <div class="inputs-row">
+        <div class="input-field">
+            <label>Discord Token</label>
+            <input type="password" id="token" placeholder="Nhập Token tài khoản...">
         </div>
-        <div class="checkbox-item">
-            <input type="checkbox" id="deaf" checked> 
-            <label for="deaf">Tắt Loa</label>
+        <div class="input-field">
+            <label>Guild ID (ID Server)</label>
+            <input type="text" id="guild_id" placeholder="Nhập ID Server...">
         </div>
-        <div class="checkbox-item">
-            <input type="checkbox" id="stream"> 
-            <label for="stream">Bật Cam/Stream</label>
+        <div class="input-field">
+            <label>Channel ID (ID Phòng)</label>
+            <input type="text" id="channel_id" placeholder="Nhập ID Phòng voice...">
         </div>
     </div>
     
-    <button onclick="startBot()">KHỞI CHẠY TREO VOICE</button>
+    <div class="controls-row">
+        <div class="checkbox-container">
+            <label class="checkbox-item">
+                <input type="checkbox" id="mute" checked>
+                <span>Tắt Mic</span>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="deaf" checked>
+                <span>Tắt Loa</span>
+            </label>
+            <label class="checkbox-item">
+                <input type="checkbox" id="stream">
+                <span>Bật Cam/Stream</span>
+            </label>
+        </div>
+        
+        <div class="button-container">
+            <button class="start-btn" onclick="startBot()">START VOICE TOOL</button>
+        </div>
+    </div>
+    
     <div id="status"></div>
     
-    <div class="discord-widget-container">
-        <div class="discord-title">Gia Nhập Cộng Đồng Hỗ Trợ</div>
-        <iframe src="https://discord.com/widget?id=150039246045716581&theme=dark" width="100%" height="180" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts" class="discord-iframe"></iframe>
+    <div class="discord-big-banner">
+        <a href="https://discord.gg/7K6AbqhvZj" target="_blank" class="discord-btn-card">
+            <svg class="discord-icon" viewBox="0 0 127.14 96.36">
+                <path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a74.37,74.37,0,0,0,6.66-10.85,68.43,68.43,0,0,1-10.51-5c.87-.64,1.72-1.32,2.53-2a75.43,75.43,0,0,0,73,0c.81.71,1.66,1.39,2.53,2a68.43,68.43,0,0,1-10.51,5,74.37,74.37,0,0,0,6.66,10.85,105.73,105.73,0,0,0,31-18.83C129.5,49.87,123.37,27,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.92,46,53.7,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.16,46,95.94,53,91,65.69,84.69,65.69Z"/>
+            </svg>
+            <p class="discord-text-main">JOIN THE COMMUNITY</p>
+            <p class="discord-text-sub">discord.gg/7K6AbqhvZj</p>
+        </a>
     </div>
 </div>
 
@@ -169,11 +353,11 @@
         const statusDiv = document.getElementById('status');
 
         if(!token || !guild_id || !channel_id) {
-            statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ Vui lòng nhập đầy đủ thông tin!</span>";
+            statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ Vui lòng nhập đầy đủ thông tin hệ thống!</span>";
             return;
         }
 
-        statusDiv.innerHTML = "<span style='color:#ffff00;'>⏳ Đang gửi lệnh lên máy chủ...</span>";
+        statusDiv.innerHTML = "<span style='color:var(--neon-cyan); text-shadow: 0 0 5px var(--neon-cyan);'>⏳ ĐANG GỬI YÊU CẦU LÊN MÁY CHỦ PYTHON...</span>";
 
         fetch('/start_bot', {
             method: 'POST',
@@ -183,13 +367,13 @@
         .then(response => response.json())
         .then(data => {
             if(data.success) {
-                statusDiv.innerHTML = "<span style='color:#00ff66;'>✅ " + data.message + "</span>";
+                statusDiv.innerHTML = "<span style='color:var(--neon-green); text-shadow: 0 0 8px var(--neon-green);'>✅ " + data.message + "</span>";
             } else {
-                statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ Lỗi: " + data.message + "</span>";
+                statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ LỖI: " + data.message + "</span>";
             }
         })
         .catch(err => {
-            statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ Lỗi kết nối máy chủ!</span>";
+            statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ LỖI KẾT NỐI MÁY CHỦ REQ-TIMEOUT!</span>";
         });
     }
 </script>
