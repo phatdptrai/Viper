@@ -338,6 +338,28 @@
 </div>
 
 <script>
+    // [MỚI] Tự động tải lại dữ liệu cũ đã lưu từ LocalStorage khi load/refresh trang
+    window.onload = function() {
+        if (localStorage.getItem('saved_token')) {
+            document.getElementById('token').value = localStorage.getItem('saved_token');
+        }
+        if (localStorage.getItem('saved_guild_id')) {
+            document.getElementById('guild_id').value = localStorage.getItem('saved_guild_id');
+        }
+        if (localStorage.getItem('saved_channel_id')) {
+            document.getElementById('channel_id').value = localStorage.getItem('saved_channel_id');
+        }
+        if (localStorage.getItem('saved_mute')) {
+            document.getElementById('mute').checked = localStorage.getItem('saved_mute') === 'true';
+        }
+        if (localStorage.getItem('saved_deaf')) {
+            document.getElementById('deaf').checked = localStorage.getItem('saved_deaf') === 'true';
+        }
+        if (localStorage.getItem('saved_stream')) {
+            document.getElementById('stream').checked = localStorage.getItem('saved_stream') === 'true';
+        }
+    };
+
     function startBot() {
         const token = document.getElementById('token').value.trim();
         const guild_id = document.getElementById('guild_id').value.trim();
@@ -363,6 +385,14 @@
         .then(data => {
             if(data.success) {
                 statusDiv.innerHTML = "<span style='color:var(--neon-green); text-shadow: 0 0 8px var(--neon-green);'>" + data.message + "</span>";
+                
+                // [MỚI] TOKEN HỢP LỆ -> LƯU NGAY VÀO LOCALSTORAGE ĐỂ LẦN SAU F5 KHÔNG BỊ MẤT
+                localStorage.setItem('saved_token', token);
+                localStorage.setItem('saved_guild_id', guild_id);
+                localStorage.setItem('saved_channel_id', channel_id);
+                localStorage.setItem('saved_mute', mute);
+                localStorage.setItem('saved_deaf', deaf);
+                localStorage.setItem('saved_stream', stream);
             } else {
                 statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ LỖI KHỞI CHẠY: " + data.message + "</span>";
             }
