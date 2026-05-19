@@ -26,7 +26,7 @@
             overflow-x: hidden;
         }
 
-        /* Hộp giao diện nằm ngang siêu rộng */
+        /* Giao diện khung chữ nhật nằm ngang siêu rộng */
         .main-wrapper {
             position: relative;
             background: rgba(15, 15, 25, 0.9);
@@ -56,11 +56,11 @@
             border-color: var(--neon-cyan);
         }
 
-        /* Tiêu đề hiệu ứng Neon Pulse nhấp nháy */
+        /* Hiệu ứng tiêu đề chữ Neon Pulse nhấp nháy chuyển màu ma mị */
         h2 { 
             text-align: center; 
             margin-top: 0;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             font-size: 28px;
             font-weight: 800;
             letter-spacing: 3px;
@@ -74,7 +74,31 @@
             100% { text-shadow: 0 0 25px var(--neon-purple), 0 0 40px var(--neon-cyan), 0 0 50px rgba(189, 0, 255, 0.8); }
         }
 
-        /* Bố cục 3 cột nằm ngang xếp hàng đều tăm tắp */
+        /* Khu vực Dropdown chọn lại tài khoản cũ */
+        .history-section {
+            margin-bottom: 25px;
+            background: rgba(255,255,255,0.03);
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px dashed #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .history-section select {
+            background: #07070b;
+            color: var(--neon-green);
+            border: 1px solid var(--neon-purple);
+            padding: 8px;
+            border-radius: 6px;
+            width: 72%;
+            outline: none;
+            font-family: monospace;
+            cursor: pointer;
+        }
+
+        /* Chia 3 ô Inputs nằm ngang hàng đều tăm tắp */
         .inputs-row {
             display: table;
             width: 100%;
@@ -120,7 +144,7 @@
             outline: none;
         }
 
-        /* Hàng chứa các nút cài đặt trạng thái và Nút kích hoạt */
+        /* Hàng chứa các Checkbox và nút Bấm chạy lệnh */
         .controls-row {
             display: table;
             width: 100%;
@@ -139,11 +163,9 @@
             cursor: pointer;
         }
         
-        .checkbox-item input[type="checkbox"] {
-            display: none;
-        }
+        .checkbox-item input[type="checkbox"] { display: none; }
 
-        /* Thiết kế custom ô checkbox kiểu Cyber */
+        /* Custom lại các Checkbox theo phong cách LED của game Cyberpunk */
         .checkbox-item span {
             position: relative;
             padding-left: 28px;
@@ -214,7 +236,7 @@
             min-height: 20px;
         }
         
-        /* KHUNG DISCORD BANNER SIÊU TO KHỔNG LỒ NẰM DƯỚI */
+        /* KHUNG DISCORD BANNER SIÊU TO KHỔNG LỒ NẰM PHÍA DƯỚI */
         .discord-big-banner {
             margin-top: 35px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -244,9 +266,7 @@
             transition: 0.5s;
         }
 
-        .discord-btn-card:hover::before {
-            left: 100%;
-        }
+        .discord-btn-card:hover::before { left: 100%; }
 
         .discord-btn-card:hover {
             transform: translateY(-4px);
@@ -254,7 +274,6 @@
             box-shadow: 0 12px 30px rgba(88, 101, 242, 0.4);
         }
 
-        /* Icon Discord SVG vẽ trực tiếp siêu sắc nét */
         .discord-icon {
             width: 55px;
             height: 55px;
@@ -293,6 +312,13 @@
 <div class="main-wrapper">
     <h2>⚡ VIPER COMMUNITY ⚡ DISCORD VOICE TOOL</h2>
     
+    <div class="history-section">
+        <label style="margin: 0; color: var(--neon-purple);">Chọn dữ liệu cũ đã lưu:</label>
+        <select id="saved_tokens_dropdown" onchange="loadSavedData(this.value)">
+            <option value="">-- Bấm vào đây để tự động điền Token đã lưu --</option>
+        </select>
+    </div>
+    
     <div class="inputs-row">
         <div class="input-field">
             <label>Discord Token</label>
@@ -304,7 +330,7 @@
         </div>
         <div class="input-field">
             <label>Channel ID (ID Phòng)</label>
-            <input type="text" id="channel_id" placeholder="Nhập ID Phòng voice...">
+            <input type="text" id="channel_id" placeholder="Nhập ID Kênh voice...">
         </div>
     </div>
     
@@ -343,6 +369,39 @@
 </div>
 
 <script>
+    let globalSavedData = [];
+
+    // Tự động quét và lấy lịch sử Token trong database SQLite khi vừa load trang
+    window.onload = function() {
+        fetch('/get_saved_data')
+        .then(res => res.json())
+        .then(resData => {
+            if(resData.success && resData.data.length > 0) {
+                globalSavedData = resData.data;
+                const dropdown = document.getElementById('saved_tokens_dropdown');
+                resData.data.forEach((item, index) => {
+                    let maskedToken = item.token.substring(0, 15) + "..." + item.token.substring(item.token.length - 5);
+                    let opt = document.createElement('option');
+                    opt.value = index;
+                    opt.innerHTML = `Tài khoản ${index + 1} (Server: ${item.guild_id}) | ${maskedToken}`;
+                    dropdown.appendChild(opt);
+                });
+            }
+        });
+    };
+
+    // Hàm tự động điền ngược dữ liệu cũ vào các ô trống khi người dùng click dropdown
+    function loadSavedData(index) {
+        if(index === "") return;
+        const botData = globalSavedData[parseInt(index)];
+        document.getElementById('token').value = botData.token;
+        document.getElementById('guild_id').value = botData.guild_id;
+        document.getElementById('channel_id').value = botData.channel_id;
+        document.getElementById('mute').checked = botData.mute;
+        document.getElementById('deaf').checked = botData.deaf;
+        document.getElementById('stream').checked = botData.stream;
+    }
+
     function startBot() {
         const token = document.getElementById('token').value.trim();
         const guild_id = document.getElementById('guild_id').value.trim();
@@ -353,11 +412,11 @@
         const statusDiv = document.getElementById('status');
 
         if(!token || !guild_id || !channel_id) {
-            statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ Vui lòng nhập đầy đủ thông tin hệ thống!</span>";
+            statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ Vui lòng điền đủ thông tin hệ thống!</span>";
             return;
         }
 
-        statusDiv.innerHTML = "<span style='color:var(--neon-cyan); text-shadow: 0 0 5px var(--neon-cyan);'>⏳ ĐANG GỬI YÊU CẦU LÊN MÁY CHỦ PYTHON...</span>";
+        statusDiv.innerHTML = "<span style='color:var(--neon-cyan);'>⏳ ĐANG CHECK TRẠNG THÁI TOKEN TRÊN DISCORD API...</span>";
 
         fetch('/start_bot', {
             method: 'POST',
@@ -367,9 +426,11 @@
         .then(response => response.json())
         .then(data => {
             if(data.success) {
-                statusDiv.innerHTML = "<span style='color:var(--neon-green); text-shadow: 0 0 8px var(--neon-green);'>✅ " + data.message + "</span>";
+                statusDiv.innerHTML = "<span style='color:var(--neon-green); text-shadow: 0 0 8px var(--neon-green);'>" + data.message + "</span>";
+                // Tự động reset và load lại trang sau 2 giây để dropdown cập nhật dữ liệu mới nhất
+                setTimeout(() => { location.reload(); }, 2000);
             } else {
-                statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ LỖI: " + data.message + "</span>";
+                statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ LỖI KHỞI CHẠY: " + data.message + "</span>";
             }
         })
         .catch(err => {
