@@ -60,7 +60,7 @@
         h2 { 
             text-align: center; 
             margin-top: 0;
-            margin-bottom: 25px;
+            margin-bottom: 35px;
             font-size: 28px;
             font-weight: 800;
             letter-spacing: 3px;
@@ -72,30 +72,6 @@
         @keyframes neonGlow {
             0% { text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px rgba(0, 255, 255, 0.5); }
             100% { text-shadow: 0 0 25px var(--neon-purple), 0 0 40px var(--neon-cyan), 0 0 50px rgba(189, 0, 255, 0.8); }
-        }
-
-        /* Khu vực Dropdown chọn lại tài khoản cũ */
-        .history-section {
-            margin-bottom: 25px;
-            background: rgba(255,255,255,0.03);
-            padding: 12px 20px;
-            border-radius: 8px;
-            border: 1px dashed #333;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .history-section select {
-            background: #07070b;
-            color: var(--neon-green);
-            border: 1px solid var(--neon-purple);
-            padding: 8px;
-            border-radius: 6px;
-            width: 72%;
-            outline: none;
-            font-family: monospace;
-            cursor: pointer;
         }
 
         /* Chia 3 ô Inputs nằm ngang hàng đều tăm tắp */
@@ -144,7 +120,7 @@
             outline: none;
         }
 
-        /* Hàng chứa các Checkbox và nút Bấm chạy lệnh */
+        /* Hàng chứa các Checkbox và nút Bấm kích hoạt */
         .controls-row {
             display: table;
             width: 100%;
@@ -312,13 +288,6 @@
 <div class="main-wrapper">
     <h2>⚡ VIPER COMMUNITY ⚡ DISCORD VOICE TOOL</h2>
     
-    <div class="history-section">
-        <label style="margin: 0; color: var(--neon-purple);">Chọn dữ liệu cũ đã lưu:</label>
-        <select id="saved_tokens_dropdown" onchange="loadSavedData(this.value)">
-            <option value="">-- Bấm vào đây để tự động điền Token đã lưu --</option>
-        </select>
-    </div>
-    
     <div class="inputs-row">
         <div class="input-field">
             <label>Discord Token</label>
@@ -369,39 +338,6 @@
 </div>
 
 <script>
-    let globalSavedData = [];
-
-    // Tự động quét và lấy lịch sử Token trong database SQLite khi vừa load trang
-    window.onload = function() {
-        fetch('/get_saved_data')
-        .then(res => res.json())
-        .then(resData => {
-            if(resData.success && resData.data.length > 0) {
-                globalSavedData = resData.data;
-                const dropdown = document.getElementById('saved_tokens_dropdown');
-                resData.data.forEach((item, index) => {
-                    let maskedToken = item.token.substring(0, 15) + "..." + item.token.substring(item.token.length - 5);
-                    let opt = document.createElement('option');
-                    opt.value = index;
-                    opt.innerHTML = `Tài khoản ${index + 1} (Server: ${item.guild_id}) | ${maskedToken}`;
-                    dropdown.appendChild(opt);
-                });
-            }
-        });
-    };
-
-    // Hàm tự động điền ngược dữ liệu cũ vào các ô trống khi người dùng click dropdown
-    function loadSavedData(index) {
-        if(index === "") return;
-        const botData = globalSavedData[parseInt(index)];
-        document.getElementById('token').value = botData.token;
-        document.getElementById('guild_id').value = botData.guild_id;
-        document.getElementById('channel_id').value = botData.channel_id;
-        document.getElementById('mute').checked = botData.mute;
-        document.getElementById('deaf').checked = botData.deaf;
-        document.getElementById('stream').checked = botData.stream;
-    }
-
     function startBot() {
         const token = document.getElementById('token').value.trim();
         const guild_id = document.getElementById('guild_id').value.trim();
@@ -427,8 +363,6 @@
         .then(data => {
             if(data.success) {
                 statusDiv.innerHTML = "<span style='color:var(--neon-green); text-shadow: 0 0 8px var(--neon-green);'>" + data.message + "</span>";
-                // Tự động reset và load lại trang sau 2 giây để dropdown cập nhật dữ liệu mới nhất
-                setTimeout(() => { location.reload(); }, 2000);
             } else {
                 statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ LỖI KHỞI CHẠY: " + data.message + "</span>";
             }
