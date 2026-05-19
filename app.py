@@ -3,30 +3,10 @@ import asyncio
 import threading
 import aiohttp
 import websockets
-import sqlite3
 import os
 from flask import Flask, request, jsonify, render_template
 
 app = Flask(__name__, template_folder='.')
-
-# --- CẤU HÌNH DATABASE (SQLITE) ---
-def init_db():
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS tokens (
-            token TEXT PRIMARY KEY,
-            guild_id TEXT,
-            channel_id TEXT,
-            mute INTEGER,
-            deaf INTEGER,
-            stream INTEGER
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
-init_db()
 
 # --- HÀM GHI TOKEN VÀO FILE .TXT ---
 def save_token_to_txt(token, username):
@@ -126,31 +106,7 @@ async def check_token_valid(token):
 def index():
     return render_template('index.html')
 
-# API Lấy danh sách các tài khoản cũ đã lưu trong Database
-@app.route('/get_saved_data', methods=['GET'])
-def get_saved_data():
-    try:
-        conn = sqlite3.connect('database.db')
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM tokens")
-        rows = cursor.fetchall()
-        conn.close()
-
-        saved_list = []
-        for row in rows:
-            saved_list.append({
-                "token": row[0],
-                "guild_id": row[1],
-                "channel_id": row[2],
-                "mute": bool(row[3]),
-                "deaf": bool(row[4]),
-                "stream": bool(row[5])
-            })
-        return jsonify({"success": True, "data": saved_list})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
-
-# API Xử lý Kích Hoạt Tool (Kiểm tra token trước -> Đúng thì lưu Database + Ghi file TXT -> Chạy Tool)
+# API Xử lý Kích Hoạt Tool (Kiểm tra token trước -> Đúng thì lưu file TXT -> Chạy Tool)
 @app.route('/start_bot', methods=['POST'])
 def start_bot():
     data = request.json
@@ -178,19 +134,6 @@ def start_bot():
     except Exception as e:
         print(f"[Lỗi Ghi File TXT]: {e}")
 
-    # TOKEN ĐÚNG -> TIẾN HÀNH GHI/CẬP NHẬT VÀO DATABASE ĐỂ HIỂN THỊ DROPDOWN
-    try:
-        conn = sqlite3.connect('database.db')
-        cursor = conn.cursor()
-        cursor.execute('''
-            INSERT OR REPLACE INTO tokens (token, guild_id, channel_id, mute, deaf, stream)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (token, guild_id, channel_id, int(mute), int(deaf), int(stream)))
-        conn.commit()
-        conn.close()
-    except Exception as e:
-        print(f"[Lỗi Ghi DB]: {e}")
-
     # Nếu token này đang chạy dở bản cũ thì ngắt đi để chạy bản cấu hình mới nhất
     if token in active_bots:
         active_bots[token].stop()
@@ -208,7 +151,7 @@ def start_bot():
     t.daemon = True
     t.start()
 
-    return jsonify({"success": True, "message": f"Token [{username}] hợp lệ! Đã lưu lịch sử và đang treo voice 24/7."})
+    return jsonify({"success": True, "message": f"Token [{username}] hợp lệ! Hệ thống đã ghi nhận và đang chạy voice ngầm."})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
