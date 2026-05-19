@@ -2,34 +2,130 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Tool Treo Voice - BAO KHANG</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool Treo Voice - VIPER COMMUNITY</title>
     <style>
-        body { background-color: #0d0d0d; color: #00ff00; font-family: 'Courier New', Courier, monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { border: 2px solid #00ffff; padding: 30px; border-radius: 10px; width: 400px; background-color: #1a1a1a; box-shadow: 0 0 15px #00ffff; }
-        h2 { text-align: center; color: #00ffff; margin-top: 0; }
-        label { display: block; margin-top: 15px; font-weight: bold; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 10px; margin-top: 5px; background-color: #262626; color: #fff; border: 1px solid #00ff00; box-sizing: border-box; border-radius: 5px; }
-        .checkbox-group { margin-top: 20px; display: flex; justify-content: space-between; }
-        button { width: 100%; padding: 12px; margin-top: 25px; background-color: #00ffff; color: #000; font-weight: bold; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-        button:hover { background-color: #00ccff; box-shadow: 0 0 15px #00ccff; }
-        .footer { text-align: center; margin-top: 20px; color: #ff00ff; font-size: 12px; }
-        #status { margin-top: 15px; text-align: center; font-weight: bold; font-size: 15px;}
+        :root {
+            --glow-color: #00ffff;
+            --purple-glow: #bd00ff;
+        }
+        body { 
+            background: radial-gradient(circle, #111116 0%, #050508 100%);
+            color: #00ff66; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            margin: 0; 
+        }
+        .container { 
+            border: 2px solid var(--glow-color); 
+            padding: 35px; 
+            border-radius: 16px; 
+            width: 420px; 
+            background-color: rgba(20, 20, 27, 0.95); 
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2), inset 0 0 15px rgba(0, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: 0.4s;
+        }
+        .container:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.4), inset 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+        h2 { 
+            text-align: center; 
+            color: #fff; 
+            margin-top: 0; 
+            font-size: 22px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--glow-color);
+            animation: pulse 2s infinite alternate;
+        }
+        @keyframes pulse {
+            0% { text-shadow: 0 0 8px var(--glow-color); }
+            100% { text-shadow: 0 0 20px var(--glow-color), 0 0 30px var(--purple-glow); }
+        }
+        label { display: block; margin-top: 18px; font-weight: 600; color: #00fffff; font-size: 14px; letter-spacing: 0.5px; }
+        input[type="text"], input[type="password"] { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 6px; 
+            background-color: #0d0d13; 
+            color: #fff; 
+            border: 1px solid #333; 
+            box-sizing: border-box; 
+            border-radius: 8px; 
+            font-family: monospace;
+            transition: 0.3s;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: var(--glow-color);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            outline: none;
+        }
+        .checkbox-group { 
+            margin-top: 22px; 
+            display: flex; 
+            justify-content: space-between; 
+            background: #0d0d13;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #222;
+        }
+        .checkbox-item { display: flex; align-items: center; gap: 5px; }
+        .checkbox-item input { cursor: pointer; }
+        .checkbox-item label { margin-top: 0; cursor: pointer; color: #aaa; font-size: 13px; }
+        .checkbox-item input:checked + label { color: #00ff66; }
+        
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            margin-top: 25px; 
+            background: linear-gradient(45deg, #00ffff, #bd00ff);
+            color: #fff; 
+            font-weight: bold; 
+            font-size: 15px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: 0.4s; 
+            letter-spacing: 1px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(189, 0, 255, 0.5); 
+        }
+        button:active { transform: translateY(0); }
+        .footer { text-align: center; margin-top: 25px; color: #666; font-size: 11px; line-height: 1.6; }
+        .footer a { color: #bd00ff; text-decoration: none; font-weight: bold; transition: 0.3s; }
+        .footer a:hover { color: #00ffff; text-shadow: 0 0 8px var(--glow-color); }
+        #status { margin-top: 15px; text-align: center; font-weight: bold; font-size: 14px;}
     </style>
 </head>
 <body>
 <div class="container">
-    <h2>=== BAO KHANG TOOL ===<br>Discord Voice Web</h2>
+    <h2>⚡ VIPER COMMUNITY ⚡<br>Discord Voice Web</h2>
     <label>Discord Token:</label>
-    <input type="password" id="token" placeholder="Nhập Token của bạn...">
+    <input type="password" id="token" placeholder="Nhập Token tài khoản...">
     <label>Guild ID (ID Server):</label>
-    <input type="text" id="guild_id" placeholder="Nhập ID Server...">
+    <input type="text" id="guild_id" placeholder="Nhập ID Server Discord...">
     <label>Channel ID (ID Phòng Voice):</label>
-    <input type="text" id="channel_id" placeholder="Nhập ID Phòng...">
+    <input type="text" id="channel_id" placeholder="Nhập ID Kênh Voice...">
     
     <div class="checkbox-group">
-        <div><input type="checkbox" id="mute" checked> <label style="cursor:pointer;" for="mute">Tắt Mic</label></div>
-        <div><input type="checkbox" id="deaf" checked> <label style="cursor:pointer;" for="deaf">Tắt Loa</label></div>
-        <div><input type="checkbox" id="stream"> <label style="cursor:pointer;" for="stream">Bật Cam/Stream</label></div>
+        <div class="checkbox-item">
+            <input type="checkbox" id="mute" checked> 
+            <label for="mute">Tắt Mic</label>
+        </div>
+        <div class="checkbox-item">
+            <input type="checkbox" id="deaf" checked> 
+            <label for="deaf">Tắt Loa</label>
+        </div>
+        <div class="checkbox-item">
+            <input type="checkbox" id="stream"> 
+            <label for="stream">Bật Cam/Stream</label>
+        </div>
     </div>
     
     <button onclick="startBot()">KHỞI CHẠY TREO VOICE</button>
@@ -37,7 +133,7 @@
     
     <div class="footer">
         NO SELL ALLOWED - CẤM SELL SOURCE CODE NÀY<br>
-        Hỗ trợ tại: https://discord.gg/zika
+        Hỗ trợ tại Discord: <a href="https://discord.gg/7K6AbqhvZj" target="_blank">Viper Community</a>
     </div>
 </div>
 
@@ -58,7 +154,6 @@
 
         statusDiv.innerHTML = "<span style='color:#ffff00;'>⏳ Đang gửi lệnh lên máy chủ...</span>";
 
-        // Đoạn JS này làm nhiệm vụ đóng gói dữ liệu và gửi sang file Python
         fetch('/start_bot', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -67,7 +162,7 @@
         .then(response => response.json())
         .then(data => {
             if(data.success) {
-                statusDiv.innerHTML = "<span style='color:#00ff00;'>✅ " + data.message + "</span>";
+                statusDiv.innerHTML = "<span style='color:#00ff66;'>✅ " + data.message + "</span>";
             } else {
                 statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ Lỗi: " + data.message + "</span>";
             }
