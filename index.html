@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tool Treo Voice - BAO KHANG</title>
+    <style>
+        body { background-color: #0d0d0d; color: #00ff00; font-family: 'Courier New', Courier, monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { border: 2px solid #00ffff; padding: 30px; border-radius: 10px; width: 400px; background-color: #1a1a1a; box-shadow: 0 0 15px #00ffff; }
+        h2 { text-align: center; color: #00ffff; margin-top: 0; }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 10px; margin-top: 5px; background-color: #262626; color: #fff; border: 1px solid #00ff00; box-sizing: border-box; border-radius: 5px; }
+        .checkbox-group { margin-top: 20px; display: flex; justify-content: space-between; }
+        button { width: 100%; padding: 12px; margin-top: 25px; background-color: #00ffff; color: #000; font-weight: bold; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+        button:hover { background-color: #00ccff; box-shadow: 0 0 15px #00ccff; }
+        .footer { text-align: center; margin-top: 20px; color: #ff00ff; font-size: 12px; }
+        #status { margin-top: 15px; text-align: center; font-weight: bold; font-size: 15px;}
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>=== BAO KHANG TOOL ===<br>Discord Voice Web</h2>
+    <label>Discord Token:</label>
+    <input type="password" id="token" placeholder="Nhập Token của bạn...">
+    <label>Guild ID (ID Server):</label>
+    <input type="text" id="guild_id" placeholder="Nhập ID Server...">
+    <label>Channel ID (ID Phòng Voice):</label>
+    <input type="text" id="channel_id" placeholder="Nhập ID Phòng...">
+    
+    <div class="checkbox-group">
+        <div><input type="checkbox" id="mute" checked> <label style="cursor:pointer;" for="mute">Tắt Mic</label></div>
+        <div><input type="checkbox" id="deaf" checked> <label style="cursor:pointer;" for="deaf">Tắt Loa</label></div>
+        <div><input type="checkbox" id="stream"> <label style="cursor:pointer;" for="stream">Bật Cam/Stream</label></div>
+    </div>
+    
+    <button onclick="startBot()">KHỞI CHẠY TREO VOICE</button>
+    <div id="status"></div>
+    
+    <div class="footer">
+        NO SELL ALLOWED - CẤM SELL SOURCE CODE NÀY<br>
+        Hỗ trợ tại: https://discord.gg/zika
+    </div>
+</div>
+
+<script>
+    function startBot() {
+        const token = document.getElementById('token').value.trim();
+        const guild_id = document.getElementById('guild_id').value.trim();
+        const channel_id = document.getElementById('channel_id').value.trim();
+        const mute = document.getElementById('mute').checked;
+        const deaf = document.getElementById('deaf').checked;
+        const stream = document.getElementById('stream').checked;
+        const statusDiv = document.getElementById('status');
+
+        if(!token || !guild_id || !channel_id) {
+            statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ Vui lòng nhập đầy đủ thông tin!</span>";
+            return;
+        }
+
+        statusDiv.innerHTML = "<span style='color:#ffff00;'>⏳ Đang gửi lệnh lên máy chủ...</span>";
+
+        // Đoạn JS này làm nhiệm vụ đóng gói dữ liệu và gửi sang file Python
+        fetch('/start_bot', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token, guild_id, channel_id, mute, deaf, stream })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                statusDiv.innerHTML = "<span style='color:#00ff00;'>✅ " + data.message + "</span>";
+            } else {
+                statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ Lỗi: " + data.message + "</span>";
+            }
+        })
+        .catch(err => {
+            statusDiv.innerHTML = "<span style='color:#ff4d4d;'>❌ Lỗi kết nối máy chủ!</span>";
+        });
+    }
+</script>
+</body>
+</html>
